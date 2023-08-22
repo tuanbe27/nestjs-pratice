@@ -10,10 +10,20 @@ export class LoggerMiddleware implements NestMiddleware {
     const requestMethod = req.method;
     const requestUrl = req.url;
     const timestamp = new Date().toISOString();
+    const body = req.body;
+    const headers = req.headers;
+    const path = req.path;
 
     console.log(
       `Request Log - Timestamp: ${timestamp}, User-Agent: ${userAgent}, Authorization: ${authorizationToken}, IP: ${clientIp}, Method: ${requestMethod}, URL: ${requestUrl}`,
     );
+
+    console.log('Request Info: ', {
+      path,
+      body,
+      headers,
+      authorizationToken: authorizationToken || 'no authorization token',
+    });
     next();
   }
 }

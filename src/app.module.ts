@@ -1,13 +1,9 @@
 import { LoggerMiddleware } from '@Middlewares/logger.middleware';
 import { PostModule } from '@Posts/post.module';
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
-import { RouterModule } from '@nestjs/core/router';
 
 @Module({
-  imports: [
-    PostModule,
-    RouterModule.register([{ path: '/', module: PostModule }]),
-  ],
+  imports: [PostModule],
   controllers: [],
   providers: [],
 })
