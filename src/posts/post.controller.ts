@@ -9,34 +9,44 @@ import {
 } from '@nestjs/common';
 import { CreatePostDto } from './dto/createPost.dto';
 import { UpdatePostDto } from './dto/updatePost.dto';
-import { IPostService } from './post.interface';
+import { IPostController, IPostService, Posts } from './post.interface';
+import PostService from './post.service';
 
 @Controller('posts')
-export default class PostController {
-  constructor(private readonly postService: IPostService) {}
+export default class PostController implements IPostController {
+  private readonly postService: IPostService;
+  constructor() {
+    console.log('PostController To Be Implemented');
+    this.postService = new PostService();
+  }
 
   @Get()
-  getAllPosts() {
+  async getAllPosts(): Promise<Posts[]> {
     return this.postService.getAllPosts();
   }
 
   @Get(':id')
-  getPostById(@Param('id') id: string) {
+  async getPostById(@Param('id') id: string): Promise<Posts> {
     return this.postService.getPostById(Number(id));
   }
 
   @Post()
-  createPost(@Body() post: CreatePostDto) {
+  async createPost(@Body() post: CreatePostDto): Promise<Posts> {
+    console.log(post);
+
     return this.postService.createPost(post);
   }
 
   @Put(':id')
-  replacePost(id: string, @Body() post: UpdatePostDto) {
+  async replacePost(
+    @Param('id') id: string,
+    @Body() post: UpdatePostDto,
+  ): Promise<Posts> {
     return this.postService.replacePost(Number(id), post);
   }
 
   @Delete(':id')
-  deletePost(id: string) {
+  async deletePost(@Param('id') id: string): Promise<void> {
     return this.postService.deletePost(Number(id));
   }
 }

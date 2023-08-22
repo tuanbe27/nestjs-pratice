@@ -1,24 +1,53 @@
-import { CreatePostDto } from './dto/createPost.dto';
-import { IPostService } from './post.interface';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { IPostService, Posts } from '@Posts/post.interface';
+import { CreatePostDto } from '@Posts/dto/createPost.dto';
+import { UpdatePostDto } from '@Posts/dto/updatePost.dto';
 
+@Injectable()
 export default class PostService implements IPostService {
-  async getAllPosts() {
-    return;
+  private lastPostId = 0;
+  private posts: Posts[] = [];
+
+  constructor() {
+    console.log('PostService To Be Implemented');
   }
-  async getPostById(id: number) {
-    console.log(id);
-    return;
+
+  async getAllPosts(): Promise<Posts[]> {
+    return this.posts;
   }
-  async createPost(post: CreatePostDto) {
-    console.log(post);
-    return;
+  async getPostById(id: number): Promise<Posts> {
+    const post: Posts = this.posts.find((post) => post.id === id);
+    if (post) {
+      return post;
+    }
+    throw new HttpException('Post not found', HttpStatus.NOT_FOUND);
   }
-  async replacePost(id: number, post: CreatePostDto) {
-    console.log(id, post);
-    return;
+
+  async createPost(post: CreatePostDto): Promise<Posts> {
+    const newPost: Posts = {
+      id: ++this.lastPostId,
+      ...post,
+    };
+    this.posts.push(newPost);
+    return newPost;
   }
-  async deletePost(id: number) {
-    console.log(id);
-    return;
+
+  async replacePost(id: number, post: UpdatePostDto): Promise<Posts> {
+    const postIndex = this.posts.findIndex((post) => post.id === id);
+
+    if (postIndex > -1) {
+      this.posts[postIndex] = post;
+      return post;
+    }
+    throw new HttpException('Posts not found', HttpStatus.NOT_FOUND);
+  }
+
+  async deletePost(id: number): Promise<void> {
+    const postIndex = this.posts.findIndex((post) => post.id === id);
+    if (postIndex > -1) {
+      this.posts.splice(postIndex, 1);
+      return;
+    }
+    throw new HttpException('Posts not found', HttpStatus.NOT_FOUND);
   }
 }
